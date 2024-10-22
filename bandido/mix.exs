@@ -61,7 +61,7 @@ defmodule Bandido.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:crawly, "~> 0.17.2"},
-
+      {:wallaby, "~> 0.30"}
     ]
   end
 
