@@ -1,49 +1,25 @@
  # lib/crawly_example/books_to_scrape.ex
  defmodule Bandido.SpiderMan do
   use Crawly.Spider
-  import Floki
   require Logger
 
   @impl Crawly.Spider
-  def base_url, do: "https://books.toscrape.com/"
+  def base_url, do: "https://www.chatgpt.com/"
 
   @impl Crawly.Spider
   def init do
     Logger.info("SpiderMan init called")
-    [start_urls: ["https://books.toscrape.com/"]]
+    [start_urls: ["https://chatgpt.com/share/67170dbc-bc10-8004-9d9e-a923616a5aba/"]]
   end
 
   @impl Crawly.Spider
   def parse_item(response) do
     Logger.info("SpiderMan parse_item called for URL: #{response.request_url}")
 
-    # Parse response body to document
-    {:ok, document} = Floki.parse_document(response.body)
+    # Broadcast the HTML content
+    Phoenix.PubSub.broadcast(Bandido.PubSub, "spider_results", {:spider_results, response.body})
 
-    # Create item (for pages where items exists)
-    items =
-      document
-      |> Floki.find(".product_pod")
-      |> Enum.map(fn x ->
-        item = %{
-          title: Floki.find(x, "h3 a") |> Floki.attribute("title") |> Floki.text(),
-          price: Floki.find(x, ".product_price .price_color") |> Floki.text(),
-          url: response.request_url
-        }
-        Logger.info("Scraped item: #{inspect(item)}")
-        item
-      end)
-
-    next_requests =
-      document
-      |> Floki.find(".next a")
-      |> Floki.attribute("href")
-      |> Enum.map(fn url ->
-        Crawly.Utils.build_absolute_url(url, response.request.url)
-        |> Crawly.Utils.request_from_url()
-      end)
-
-    Logger.info("SpiderMan parse_item finished. Items: #{length(items)}, Next requests: #{length(next_requests)}")
-    %Crawly.ParsedItem{items: items, requests: next_requests}
+    # Return an empty ParsedItem to prevent further crawling
+    %Crawly.ParsedItem{items: [], requests: []}
   end
 end

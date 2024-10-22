@@ -2,13 +2,13 @@
 # Docker entrypoint script.
 
 # Compile the project
-mix deps.get
-mix do compile
+# mix deps.get
+# mix do compile
 
-cd ./assets
-npm install
+# cd ./assets
+# npm install
 
-cd ../
+# cd ../
 
 # Wait until Postgres is ready
 while ! pg_isready -q -h $PGHOST -p $PGPORT -U $PGUSER

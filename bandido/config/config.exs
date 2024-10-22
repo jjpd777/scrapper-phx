@@ -71,11 +71,16 @@ config :phoenix, :json_library, Jason
 # Configure Crawly
 config :crawly,
   closespider_timeout: 10,
-  concurrent_requests_per_domain: 8,
+  concurrent_requests_per_domain: 1,
   closespider_itemcount: 100,
   api_port: 4001,
   fetcher: {Crawly.Fetchers.HTTPoisonFetcher, []},
-  parser: {Crawly.Parsers.HTTPoisonParser, []}
+  parser: {Crawly.Parsers.HTTPoisonParser, []},
+  middlewares: [
+    Crawly.Middlewares.DomainFilter,
+    Crawly.Middlewares.UniqueRequest,
+    {Crawly.Middlewares.UserAgent, user_agents: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"]}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
