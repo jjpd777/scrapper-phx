@@ -14,8 +14,7 @@ defmodule Bandido.Application do
       {Phoenix.PubSub, name: Bandido.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Bandido.Finch},
-      # Start a worker by calling: Bandido.Worker.start_link(arg)
-      # {Bandido.Worker, arg},
+      # Conditional start for Crawly.Engine
       # Start to serve requests, typically the last entry
       BandidoWeb.Endpoint
     ]
@@ -32,5 +31,15 @@ defmodule Bandido.Application do
   def config_change(changed, _new, removed) do
     BandidoWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp crawly_engine_child_spec do
+    case Process.whereis(Crawly.Engine) do
+      nil ->
+        {Crawly.Engine, []}
+      pid when is_pid(pid) ->
+        # Crawly.Engine is already started, return a no-op child spec
+        %{id: Crawly.Engine, start: {:ignore, :already_started}, type: :supervisor}
+    end
   end
 end

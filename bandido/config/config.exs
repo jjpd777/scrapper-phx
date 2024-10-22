@@ -31,7 +31,14 @@ config :bandido, BandidoWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :bandido, Bandido.Mailer, adapter: Swoosh.Adapters.Local
 
+
 # Configure esbuild (the version is required)
+
+config :hex,
+  api_url: "https://hex.pm/api",
+  repo_url: "https://repo.hex.pm",
+  cdn_url: "https://repo.hex.pm"
+
 config :esbuild,
   version: "0.17.11",
   bandido: [
@@ -60,6 +67,15 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# Configure Crawly
+config :crawly,
+  closespider_timeout: 10,
+  concurrent_requests_per_domain: 8,
+  closespider_itemcount: 100,
+  api_port: 4001,
+  fetcher: {Crawly.Fetchers.HTTPoisonFetcher, []},
+  parser: {Crawly.Parsers.HTTPoisonParser, []}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
